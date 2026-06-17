@@ -1,45 +1,49 @@
 # ============================================================
 # APP TRIGGER
-# Sends signal to central deploy workflow when a release
-# is published. Only triggers on official releases,
-# not on every code push.
+# When a release is published, creates a GitHub Issue
+# in the ops repo requesting deployment approval.
+# Admin reviews issue and adds "approved" label to deploy.
 #
 # HOW TO DEPLOY:
 # 1. Push your code to main as normal
-# 2. When ready to publish → create a Release in GitHub
+# 2. When ready → create a Release in GitHub
 #    Releases → Create new release → Tag: v1.0.0 → Publish
-# 3. This trigger fires automatically
-# 4. Central workflow builds + deploys + registers app
+# 3. This trigger creates an issue in ops repo
+# 4. Admin approves → app deploys automatically
 #
 # GITEA MIGRATION:
-# - Replace github.com with gitea.company.internal
+# - Replace api.github.com with gitea.company.internal/api/v1
 # - Replace cbcbmbtTest with Gitea org name
-# - Update API endpoint for Gitea workflow dispatch
+# - Update issue creation endpoint for Gitea API
 # ============================================================
 
-name: Trigger Deploy
+name: Request Deployment
 
 on:
   # Only triggers when a release is published
-  # Not on every push — developer controls when to deploy
+  # Not on every push
   release:
     types: [published]
 
 jobs:
-  trigger:
+  create-issue:
     # GITEA: replace with self-hosted runner name
     runs-on: ubuntu-latest
 
     steps:
-      # ── Trigger central deploy workflow ───────────────────
-      # Sends repo name to ops/deploy.yml
-      # ops workflow handles everything else
+      # ── Create deployment request issue in ops repo ───────
+      # Creates issue with "pending approval" label
+      # Admin reviews and changes label to "approved"
       # GITEA: replace api.github.com with gitea.company.internal/api/v1
       # GITEA: replace cbcbmbtTest with Gitea org name
-      - name: Trigger central deploy
+      - name: Create deployment issue
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.REGISTRY_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/cbcbmbtTest/ops/actions/workflows/deploy.yml/dispatches \
-            -d '{"ref":"main","inputs":{"repo":"${{ github.event.repository.name }}"}}'
+            https://api.github.com/repos/cbcbmbtTest/ops/issues \
+            -d '{
+              "title": "Deploy ${{ github.event.repository.name }} ${{ github.event.release.tag_name }}",
+              "body": "## Deployment Request\n\n**App:** ${{ github.event.repository.name }}\n**Version:** ${{ github.event.release.tag_name }}\n**Released:** ${{ github.event.release.created_at }}\n**Release notes:** ${{ github.event.release.html_url }}\n\nTo approve: change label to `approved`\nTo reject: close this issue",
+              "labels": ["pending approval"]
+            }'

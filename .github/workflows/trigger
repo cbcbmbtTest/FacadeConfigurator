@@ -1,0 +1,30 @@
+# ============================================================
+# APP TRIGGER
+# Sends signal to central deploy workflow when code is pushed
+# This is the only action file needed in each app repo
+# Sends signal to central deploy workflow when a release
+# is published. Only triggers on official releases,
+# not on every code push.
+#
+# HOW TO DEPLOY:
+# 1. Push your code to main as normal
+# 2. When ready to publish → create a Release in GitHub
+#    Releases → Create new release → Tag: v1.0.0 → Publish
+# 3. This trigger fires automatically
+# 4. Central workflow builds + deploys + registers app
+#
+# GITEA MIGRATION:
+# - Replace github.com with gitea.company.internal
+@@ -12,8 +20,10 @@
+name: Trigger Deploy
+
+on:
+  push:
+    branches: [main]
+  # Only triggers when a release is published
+  # Not on every push — developer controls when to deploy
+  release:
+    types: [published]
+
+jobs:
+trigger:

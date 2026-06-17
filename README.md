@@ -1,6 +1,6 @@
 # Fassaden-Konfigurator (EPW-gestütztes Verschattungstool)
 
-Interaktives Browser-Werkzeug zum Entwurf einer **Glasfassade mit variabler horizontaler Auskragung** (Verschattung). Es zeigt in **3D**, wie die Auskragung die Scheibe verschattet, und berechnet die **auf das Glas einfallende solare Last** (W/m²) für einen gewählten Zeitpunkt – auf Basis realer Standort-Klimadaten aus einer EnergyPlus-Weather-Datei (`.epw`).
+Intseraktives Browser-Werkzeug zum Entwurf einer **Glasfassade mit variabler horizontaler Auskragung** (Verschattung). Es zeigt in **3D**, wie die Auskragung die Scheibe verschattet, und berechnet die **auf das Glas einfallende solare Last** (W/m²) für einen gewählten Zeitpunkt – auf Basis realer Standort-Klimadaten aus einer EnergyPlus-Weather-Datei (`.epw`).
 
 > **Eigenständiges HTML-Tool** (kein Build, keine Abhängigkeiten zur Laufzeit außer Three.js per CDN). Vorgesehen zur späteren Einbindung in die **MB Planungs-Toolbox** als `iframe`/`external-link`-Modul – siehe [`module.config.ts`](./module.config.ts).
 

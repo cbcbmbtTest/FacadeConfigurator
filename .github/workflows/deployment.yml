@@ -20,22 +20,13 @@
 name: Request Deployment
 
 on:
-  # Only triggers when a release is published
-  # Not on every push
   release:
     types: [published]
 
 jobs:
   create-issue:
-    # GITEA: replace with self-hosted runner name
     runs-on: ubuntu-latest
-
     steps:
-      # ── Create deployment request issue in ops repo ───────
-      # Creates issue with "pending approval" label
-      # Admin reviews and changes label to "approved"
-      # GITEA: replace api.github.com with gitea.company.internal/api/v1
-      # GITEA: replace cbcbmbtTest with Gitea org name
       - name: Create deployment issue
         run: |
           curl -X POST \
@@ -44,6 +35,6 @@ jobs:
             https://api.github.com/repos/cbcbmbtTest/ops/issues \
             -d '{
               "title": "Deploy ${{ github.event.repository.name }} ${{ github.event.release.tag_name }}",
-              "body": "## Deployment Request\n\n**App:** ${{ github.event.repository.name }}\n**Version:** ${{ github.event.release.tag_name }}\n**Released:** ${{ github.event.release.created_at }}\n**Release notes:** ${{ github.event.release.html_url }}\n\nTo approve: change label to `approved`\nTo reject: close this issue",
+              "body": "## Deployment Request\n\n**App:** ${{ github.event.repository.name }}\n**Version:** ${{ github.event.release.tag_name }}\n**Released:** ${{ github.event.release.created_at }}\n**Release notes:** ${{ github.event.release.html_url }}\n\nTo approve: change label to approved\nTo reject: close this issue",
               "labels": ["pending approval"]
             }'
